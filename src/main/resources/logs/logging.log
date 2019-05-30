@@ -1,0 +1,2 @@
+2019-05-31 02:42:16 INFO  TestGmail:54 - sending mail with subject:[test email, date: Fri May 31 02:42:16 MSK 2019]
+2019-05-31 02:42:22 INFO  InboxPage:142 - email found in inbox. subject:[test email, date: Fri May 31 02:42:16 MSK 2019]
