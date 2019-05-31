@@ -39,6 +39,6 @@ public class TestBase {
     @AfterSuite
     public void teardown() {
 
-//        driver.quit();
+        driver.quit();
     }
 }

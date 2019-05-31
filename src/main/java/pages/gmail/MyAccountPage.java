@@ -13,7 +13,7 @@ public class MyAccountPage {
     public static final String URL_MYACCOUNT = "https://myaccount.google.com";
     private static final Logger LOG = Logger.getLogger(MyAccountPage.class);
 
-    @FindBy(xpath = "//a[contains(@href, 'products') and @aria-label='Google apps']")
+    @FindBy(xpath = "//a[contains(@href, 'products') and contains(@class, 'gb_x')]")
     private WebElement googleAppsButton;
     @FindBy(xpath = "//span[contains(text(), 'Gmail')]")
     private WebElement gmailButton;

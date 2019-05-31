@@ -1,0 +1,11 @@
+2019-05-31 13:08:57 INFO  TestGmail:109 - starting login
+2019-05-31 13:09:01 INFO  TestGmail:109 - login successful
+2019-05-31 13:09:01 INFO  TestGmail:109 - switching window/tab
+2019-05-31 13:09:09 INFO  TestGmail:109 - starting new email
+2019-05-31 13:09:10 INFO  TestGmail:109 - sending mail with subject:[test email, date: Fri May 31 13:09:10 MSK 2019]
+2019-05-31 13:09:10 INFO  TestGmail:109 - email sent
+2019-05-31 13:09:10 INFO  TestGmail:109 - searching email by subject in unread inbox on page
+2019-05-31 13:09:15 INFO  TestGmail:109 - email found
+2019-05-31 13:09:15 INFO  TestGmail:109 - removing email
+2019-05-31 13:09:16 INFO  TestGmail:109 - checking email doesn't exist anymore
+2019-05-31 13:09:22 INFO  TestGmail:109 - email not found

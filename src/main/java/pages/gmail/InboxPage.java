@@ -16,6 +16,7 @@ import java.util.List;
 public class InboxPage {
     private WebDriver driver;
     private JavascriptExecutor jsExecutor;
+    WebDriverWait wait;
     public static final String URL_INBOX = "https://mail.google.com/mail/u/0/#inbox";
     private static final Logger LOG = Logger.getLogger(InboxPage.class);
 
@@ -23,25 +24,23 @@ public class InboxPage {
     private static final By dialogOkButton = By.xpath("//button[@name='ok']");
     private static final By composeButton = By.xpath("//div[contains(@class, 'T-I J-J5-Ji T-I-KE L3')]");
 
-    private static final By mailBody = By.xpath("//div[contains(@aria-label, 'Message Body')]");
+    private static final By mailBody = By.xpath("//div[contains(@class, 'Am Al editable LW-avf')]");
     private static final By mailRecipient = By.xpath("//textarea[contains(@name, 'to')]");
     private static final By mailSubject = By.xpath("//input[contains(@name, 'subjectbox')]");
     private static final By sendButtonLocator = By.xpath("//div[contains(@class, 'T-I J-J5-Ji aoO v7 T-I-atl L3')]");
+
     private static final By incommingMessageUnreadContainer = By.xpath("//tr[contains(@class, 'zA zE')]");
-    private static final By incommingMessageReadContainer = By.xpath("//tr[contains(@class, 'zA yO')]");
     private static final By incommingMessageSubject = By.xpath(".//span[contains(@class, 'bqe')]");
-    private static final By incommingMessageDeleteButton = By.xpath(".//li[contains(@class, 'bqX bru')]");
     private static final By incommingMessageCheckbox = By.xpath(".//div[contains(@class, 'oZ-jc T-Jo J-J5-Ji')]");
     private static final By inboxDeleteButton = By.xpath("//div[contains(@class, 'T-I J-J5-Ji nX T-I-ax7 T-I-Js-Gs mA')]");
 
-//    private static final By searchMailField = By.xpath("//input[contains(@class, 'gb_Oe')]");
-//    private static final By searchMailButton = By.xpath("//button[contains(@class, 'gb_Xe gb_Ze')]");
 
 
     public InboxPage(WebDriver driver) {
         LOG.debug("creating InboxPage obj");
         this.driver = driver;
         jsExecutor = (JavascriptExecutor) driver;
+        wait = new WebDriverWait(driver, 20);
         PageFactory.initElements(driver, this);
     }
 
@@ -60,35 +59,10 @@ public class InboxPage {
 
     public void clickComposeMessage() {
         LOG.debug("starting new message");
-        WebElement compose = driver.findElement(composeButton);
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        if (!compose.isDisplayed()) LOG.debug("mainmenu is NOT displayed");
-        if (!compose.isEnabled()) LOG.debug("mainmenu is NOT enabled");
-        WebDriverWait wait = new WebDriverWait(driver, 40);
-        wait.until(ExpectedConditions.visibilityOfElementLocated(composeButton));
+        WebElement compose = wait.until(ExpectedConditions.visibilityOfElementLocated(composeButton));
         compose.click();
     }
 
-
-    public void getOuterHtml() {
-        LOG.debug("finding some element");
-        List<WebElement> list = driver.findElements(mailRecipient);
-        if (list.isEmpty()) {
-            LOG.debug("no elements found");
-            return;
-        }
-        for (WebElement element : list) {
-            System.out.println(element.getAttribute("outerHTML"));
-            if (element == null) LOG.debug("element is null");
-            if (!element.isDisplayed()) LOG.debug("element is NOT displayed");
-            if (element.isEnabled()) LOG.debug("element IS enabled");
-
-        }
-    }
 
     public void setMailText(String msgBody) {
         LOG.debug("writing email body");
@@ -98,7 +72,6 @@ public class InboxPage {
     public void setRecipient(String gmailEmail) {
         LOG.debug("setting email recipient");
         WebElement mailRecipientField = driver.findElement(mailRecipient);
-//        Util.scrollIntoView(jsExecutor, mailRecipientField);
         if (!mailRecipientField.isDisplayed()) LOG.debug("element is NOT displayed");
         mailRecipientField.sendKeys(gmailEmail);
     }
@@ -110,36 +83,31 @@ public class InboxPage {
 
     public void clickSendButton() {
         LOG.debug("clicking Send button");
-        WebDriverWait wait = new WebDriverWait(driver, 30);
         WebElement button = wait.until(ExpectedConditions.elementToBeClickable(sendButtonLocator));
         button.click();
     }
 
     public WebElement findEmailBySubject(String subject) {
-//        LOG.debug("inputting search key");
-//        driver.findElement(searchMailField).sendKeys(subject);
-//        driver.findElement(searchMailButton).click();
+
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
         List<WebElement> mails = getAllMails();
-        LOG.debug("found emails: " + mails.size());
+        LOG.debug("found unread emails on page: " + mails.size());
 
         LOG.debug("searching emails by subject");
         for (WebElement email : mails) {
-//            email.findElement(incommingMessageCheckbox);
             Util.scrollIntoView(jsExecutor, email);
             Actions act = new Actions(driver);
             act.moveToElement(email).build().perform();
             WebElement subjectEl = email.findElement(incommingMessageSubject);
-//            if (!subjectEl.isDisplayed())LOG.debug("subject not displayed");
             String foundSubject = subjectEl.getAttribute("innerHTML");
             LOG.debug("found subject: " + foundSubject);
-//            System.out.println(email.getAttribute("outerHTML"));
             if (foundSubject.equals(subject)) {
-                LOG.info("email found in inbox. subject:[" + foundSubject + "]");
+                LOG.debug("email found in inbox. subject:[" + foundSubject + "]");
                 return email;
             }
         }
@@ -149,18 +117,18 @@ public class InboxPage {
 
     public List<WebElement> getAllMails() {
         LOG.debug("getting all emails on page");
-        new WebDriverWait(driver, 20).until(ExpectedConditions.visibilityOfElementLocated(incommingMessageUnreadContainer));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(incommingMessageUnreadContainer));
         return driver.findElements(incommingMessageUnreadContainer);
     }
 
     public void removeEmail(WebElement email) {
-        LOG.debug("removing an email");
-
+        LOG.debug("removing an email: [" + email.getText() + "]");
         WebElement checkbox = email.findElement(incommingMessageCheckbox);
+        LOG.debug("clicking checkbox");
         Actions act = new Actions(driver);
         act.moveToElement(checkbox).click().build().perform();
-//        checkbox.click();
-        new WebDriverWait(driver, 10).until(ExpectedConditions.visibilityOfElementLocated(inboxDeleteButton));
-        driver.findElement(inboxDeleteButton).click();
+        WebElement delete = wait.until(ExpectedConditions.visibilityOfElementLocated(inboxDeleteButton));
+        LOG.debug("clicking delete button");
+        delete.click();
     }
 }

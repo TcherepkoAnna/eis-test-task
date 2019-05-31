@@ -57,8 +57,7 @@ public class SignInPage {
     }
 
     public MyAccountPage clickPasswordNext() {
-        WebDriverWait wait = new WebDriverWait(driver, 20);
-        wait.until(ExpectedConditions.elementToBeClickable(passwordNextButton));
+        new WebDriverWait(driver, 20).until(ExpectedConditions.elementToBeClickable(passwordNextButton));
         Util.scrollIntoView((JavascriptExecutor)driver, passwordNextButton);
         LOG.debug("clicking password next button");
         passwordNextButton.click();
